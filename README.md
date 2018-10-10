@@ -17,7 +17,9 @@ Please make sure you have all the required packages installed for the above ment
 ## Getting Started
 
 Step 1 : Clone the repository.
+
 Step 2 : Create the database using the sql schema provided.
+
 Step 3 : Complete the code to enable the project to do everything mentioned in the tasks below.
 
 ## Additional Information
