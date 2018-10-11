@@ -26,6 +26,8 @@ Step 3 : Complete the code to enable the project to do everything mentioned in t
 
 This project is a online ordering application that allows users to order products online.
 
+The existing admin username and password for the ordering application is admin, and password.
+
 The current project is an incomplete project needs to be debugged and completed.
 There are some errors in the provided code that need to be found and fixed.
 
