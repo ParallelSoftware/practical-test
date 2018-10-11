@@ -22,6 +22,8 @@ Step 2 : Create the database using the sql schema provided.
 
 Step 3 : Complete the code to enable the project to do everything mentioned in the tasks below.
 
+Step 4 : Push your completed project with your own branch with the test ID as your branch name.
+
 ## Additional Information
 
 This project is a online ordering application that allows users to order products online.
