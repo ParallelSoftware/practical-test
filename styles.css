@@ -83,3 +83,10 @@ body
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;      
 }
+
+/*  */
+.product{
+  width: 100px;
+  display: inline-block;
+  padding: 2px;
+}

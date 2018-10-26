@@ -1,13 +1,16 @@
 <?php
 
-require("setting.php");
+require("settings.php");
+
+$error = "";
+
 
 if(isset($_POST["username"]) && isset($_POST["password"]))
 {
 	$username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
 	$password = filter_input(INPUT_POST, "password");
-	$error = "";
-	if(isset($_POST["firstname"]) && isset($_POST["surname"]))
+	
+	if(isset($_POST["firstname"]) && isset($_POST["surname"])) // create a user
 	{
 		$firstname = filter_input(INPUT_POST, "firstname", FILTER_SANITIZE_STRING);
 		$surname = filter_input(INPUT_POST, "surname", FILTER_SANITIZE_STRING);
@@ -24,7 +27,10 @@ if(isset($_POST["username"]) && isset($_POST["password"]))
 		if(!$error)
 		{
 			$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
-			$query = "INSERT INTO user(usernam, password, firstname, surname) VALUES(?, PASSWORD(?), ?, ?)";
+			if($mysqli->connect_error) {
+			  exit('Error connecting to database'); //Should be a message a typical user could understand in production
+			}
+			$query = "INSERT INTO user(username, password, firstname, surname) VALUES(?, PASSWORD(?), ?, ?)";
 			$statement = $mysqli->prepare($query);
 			$statement->bind_param("ssss", $username, $password, $firstname, $surname);
 			$status = $statement->execute();
@@ -41,26 +47,30 @@ if(isset($_POST["username"]) && isset($_POST["password"]))
 			}
 			$error = "Username already exists";
 			$statement->close();
-			$mysqli->closethis()
+			$mysqli->close();
 		}
 
-	} else
+	} else // logging in
 	{
 		$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
+		if($mysqli->connect_error) {
+		  exit('Error connecting to database'); //Should be a message a typical user could understand in production
+		}
 		$query = "SELECT firstname, surname, admin, id FROM user WHERE username = ? AND password = PASSWORD(?) LIMIT 1";
 		$statement = $mysqli->prepare($query);
 		$statement->bind_param("ss", $username, $password);
 		$status = $statement->execute();
 		if($status)
-		{
+		{echo "e";
 			$statement->bind_result($firstname, $surname, $admin, $id);
 			$statement->fetch();
-			$statement->close();
-			$mysqli->close();
-			if(isset($firstnme))
+			
+			if(isset($firstname))
 			{
+				$statement->close();
+				$mysqli->close();
 				session_start();
-				$user = (object)array("id" => $id, "firstname" => $firstnme, "surname" => $surname, "admin" => $admin ? true : false);
+				$user = (object)array("id" => $id, "firstname" => $firstname, "surname" => $surname, "admin" => $admin ? true : false);
 				$_SESSION["user"] = $user;
 				header("Location: order.php");
 				die;
