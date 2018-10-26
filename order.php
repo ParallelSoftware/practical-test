@@ -88,7 +88,8 @@
 			            	viewOrders();
 			            	$.each($('input[name^="quantity"]'),function(key,obj){
 			            		obj.value = 0;
-			            	});
+							});
+							editOrder(false);
 			            }
 					});
 
