@@ -115,20 +115,6 @@
 					});
 				});
 
-				// 
-				// $('.loadUpdateOrder').click(function(){
-				// 	var id = $(this).attr('id');
-
-				// 	$.ajax({
-				// 		url: 'process.php',
-				// 		type: 'POST',
-				// 		data: { type: "updateOrder", orderId: id },
-				// 		success: function (data) {
-				// 			console.log(data);
-				// 		}
-				// 	});
-				// });
-
 				$('#cancelBtn').click(function(){
 					editOrder(false);
 				});
@@ -320,7 +306,7 @@
 						<td>Cancel</td>
 					</tr>
 				</table>
-				<button id="viewOrders">Refresh</button>
+				<!-- <button id="viewOrders">Refresh</button> -->
 			</div>
 	<?php
 		}
