@@ -276,7 +276,7 @@
 	<?php
 		if($_SESSION['user']->admin){
 	?>
-		
+		<a href="csv.php" target="_blank">Export</a>
 		<table class="orderTable">
 			<tr>
 				<td>Order #</td>
