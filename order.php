@@ -1,22 +1,12 @@
 <?php
-	session_start();
-	require("settings.php");
+	require("src/Orders.php");
 
-	// check if session exists
-	if(empty($_SESSION['user'])) header("Location: index.php");
-
-	// checking if user exists in the db
-	$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
-	if($mysqli->connect_error) {
-		exit('Error connecting to database'); //Should be a message a typical user could understand in production
+	$orders = new Orders();
+	if(!$orders->_LoggedIn())
+	{
+		header("Location: index.php");
+		die;
 	}
-	$query = "SELECT firstname, surname, admin, id FROM user WHERE id = ? LIMIT 1";
-	$statement = $mysqli->prepare($query);
-	$statement->bind_param("s", $_SESSION['user']->id);
-	$status = $statement->execute();
-	$statement->close();
-	if(!$status) header("Location: index.php");
-
 ?><!DOCTYPE html>
 <html>
 	<head>
@@ -31,8 +21,8 @@
 				adminViewOrder();
 			});
 
-			function adminViewOrder(){
-
+			function adminViewOrder()
+			{
 				$.ajax({
 					url: 'process.php',
 		            type: 'POST',
@@ -82,6 +72,7 @@
 						url: 'process.php',
 			            type: 'POST',
 			            data: formData.serialize(),
+			            dataType: "json",
 			            success: function (data) {
 			            	console.log(data);
 
@@ -90,6 +81,9 @@
 			            		obj.value = 0;
 							});
 							editOrder(false);
+			            },
+			            error: function(data){
+			            	alert('Error: '+data.responseText);
 			            }
 					});
 
@@ -104,13 +98,15 @@
 						url: 'process.php',
 			            type: 'POST',
 			            data: formData.serialize(),
+			            dataType: "json",
 			            success: function (data) {
-			            	console.log(data);
-
 			            	viewOrders();
 			            	$.each($('input[name^="quantity"]'),function(key,obj){
 			            		obj.value = 0;
 			            	});
+			            },
+			            error: function(data){
+			            	alert('Error: '+data.responseText);
 			            }
 					});
 				});
@@ -123,7 +119,8 @@
 				viewOrders();
 			});
 
-			function cancelOrder(id){
+			function cancelOrder(id)
+			{
 				if(confirm('Do you want to cancel this order?')){
 					
 					$.ajax({
@@ -136,10 +133,10 @@
 			            }
 					});
 				}
-				
 			}
 
-			function viewOrder(id){
+			function viewOrder(id)
+			{
 				$('#orderId').val(id);
 				$.ajax({
 					url: 'process.php',
@@ -164,8 +161,8 @@
 				});
 			}
 
-			function viewOrders(){
-
+			function viewOrders()
+			{
 				$.ajax({
 					url: 'process.php',
 		            type: 'POST',
@@ -198,6 +195,7 @@
 		            	});
 		            },
 		            error: function(data){
+		            	console.log(data);
 		            	alert('Error View Orders');
 		            }
 				});
@@ -224,19 +222,24 @@
 		            		);
 		            	});
 		            },
-		            error: function(data){
+		            error: function(data)
+		            {
 		            	alert('Error View Products');
 		            }
 				});
 			}
 
-			function editOrder(isEdit){
-				if(isEdit){
+			function editOrder(isEdit)
+			{
+				if(isEdit)
+				{
 					$('#orderBtn').hide();
 					$('#updateBtn').show();
 					$('#cancelBtn').show();
 					$('#type').val('updateOrder');
-				} else {
+				}
+				else
+				{
 					$('#orderBtn').show();
 					$('#updateBtn').hide();
 					$('#cancelBtn').hide();
@@ -310,9 +313,6 @@
 			</div>
 	<?php
 		}
-		$mysqli->close();
 	?>
-	
-	
 	</body>
 </html>

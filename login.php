@@ -1,12 +1,11 @@
 <?php
-
-require("settings.php");
-
 $error = "";
-
 
 if(isset($_POST["username"]) && isset($_POST["password"]))
 {
+
+	require("src/Users.php");
+
 	$username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
 	$password = filter_input(INPUT_POST, "password");
 	
@@ -26,59 +25,31 @@ if(isset($_POST["username"]) && isset($_POST["password"]))
 
 		if(!$error)
 		{
-			$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
-			if($mysqli->connect_error) {
-			  exit('Error connecting to database'); //Should be a message a typical user could understand in production
-			}
-			$query = "INSERT INTO user(username, password, firstname, surname) VALUES(?, PASSWORD(?), ?, ?)";
-			$statement = $mysqli->prepare($query);
-			$statement->bind_param("ssss", $username, $password, $firstname, $surname);
-			$status = $statement->execute();
-			if($status)
+			$users = new Users();
+			if($users->_CreateUser($firstname,$surname,$username,$password))
 			{
-				$id = $statement->insert_id;
-				$statement->close();
-				$mysqli->close();
-				session_start();
-				$user = (object)array("id" => $id, "firstname" => $firstname, "surname" => $surname, "admin" => false);
-				$_SESSION["user"] = $user;
 				header("Location: order.php");
 				die;
 			}
-			$error = "Username already exists";
-			$statement->close();
-			$mysqli->close();
+			else
+			{
+				$error = "Username already exists";
+			}
 		}
-
-	} else // logging in
+	}
+	else // logging in
 	{
-		$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
-		if($mysqli->connect_error) {
-		  exit('Error connecting to database'); //Should be a message a typical user could understand in production
+		$users = new Users();
+
+		if($users->_Login($username, $password))
+		{
+			header('location: order.php');
+			die;
 		}
-		$query = "SELECT firstname, surname, admin, id FROM user WHERE username = ? AND password = PASSWORD(?) LIMIT 1";
-		$statement = $mysqli->prepare($query);
-		$statement->bind_param("ss", $username, $password);
-		$status = $statement->execute();
-		if($status)
-		{echo "e";
-			$statement->bind_result($firstname, $surname, $admin, $id);
-			$statement->fetch();
-			
-			if(isset($firstname))
-			{
-				$statement->close();
-				$mysqli->close();
-				session_start();
-				$user = (object)array("id" => $id, "firstname" => $firstname, "surname" => $surname, "admin" => $admin ? true : false);
-				$_SESSION["user"] = $user;
-				header("Location: order.php");
-				die;
-			}
+		else
+		{
+			$error = "Login or Password was incorrect!";
 		}
-		$error = "Invalid Login";
-		$statement->close();
-		$mysqli->close();
 	}
 }
 
