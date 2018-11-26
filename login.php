@@ -1,6 +1,7 @@
 <?php
-
-require("setting.php");
+ini_set("display_errors", false);
+error_reporting(E_ALL);
+require("settings.php");
 
 if(isset($_POST["username"]) && isset($_POST["password"]))
 {
@@ -24,7 +25,7 @@ if(isset($_POST["username"]) && isset($_POST["password"]))
 		if(!$error)
 		{
 			$mysqli = new mysqli($db_hostname, $db_username, $db_password, $db_database);
-			$query = "INSERT INTO user(usernam, password, firstname, surname) VALUES(?, PASSWORD(?), ?, ?)";
+			$query = "INSERT INTO user(username, password, firstname, surname) VALUES(?, PASSWORD(?), ?, ?)";
 			$statement = $mysqli->prepare($query);
 			$statement->bind_param("ssss", $username, $password, $firstname, $surname);
 			$status = $statement->execute();
@@ -41,7 +42,7 @@ if(isset($_POST["username"]) && isset($_POST["password"]))
 			}
 			$error = "Username already exists";
 			$statement->close();
-			$mysqli->closethis()
+			$mysqli->close();
 		}
 
 	} else
@@ -57,10 +58,10 @@ if(isset($_POST["username"]) && isset($_POST["password"]))
 			$statement->fetch();
 			$statement->close();
 			$mysqli->close();
-			if(isset($firstnme))
+			if(isset($firstname))
 			{
 				session_start();
-				$user = (object)array("id" => $id, "firstname" => $firstnme, "surname" => $surname, "admin" => $admin ? true : false);
+				$user = (object)array("id" => $id, "firstname" => $firstname, "surname" => $surname, "admin" => $admin ? true : false);
 				$_SESSION["user"] = $user;
 				header("Location: order.php");
 				die;
